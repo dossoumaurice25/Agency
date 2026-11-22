@@ -1,422 +1,682 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GLAgency — Dashboard planning chatters</title>
-  <meta name="description" content="Dashboard GLAgency : demandes de chatters par shift, suivi des envois et couverture en temps réel." />
+  <meta name="description"
+    content="Dashboard GLAgency : demandes de chatters par shift, suivi des envois et couverture en temps réel." />
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<!-- ===== Connexion formateur (visible uniquement avec la base partagée) ===== -->
-<div class="login" id="login">
-  <form class="login__card" id="loginForm" novalidate>
-    <img class="login__logo" src="images/logo-mark.svg" alt="GLAgency" />
-    <h1>Espace formateur</h1>
-    <p>Connecte-toi pour voir les demandes de tes managers.</p>
-    <label class="field"><span>E-mail</span><input type="email" id="loginEmail" autocomplete="username" placeholder="ton@email.com" required /></label>
-    <label class="field"><span>Mot de passe</span><input type="password" id="loginPass" autocomplete="current-password" placeholder="••••••••" required /></label>
-    <small class="error" id="loginError"></small>
-    <button type="submit" class="btn btn--primary btn--lg btn--block" id="loginBtn">Se connecter <span class="btn__circle"><svg class="ico"><use href="#i-arrow"/></svg></span></button>
-  </form>
-</div>
+  <!-- ===== Connexion formateur (visible uniquement avec la base partagée) ===== -->
+  <div class="login" id="login">
+    <form class="login__card" id="loginForm" novalidate>
+      <img class="login__logo" src="images/logo-mark.svg" alt="GLAgency" />
+      <h1>Espace formateur</h1>
+      <p>Connecte-toi pour voir les demandes de tes managers.</p>
+      <label class="field"><span>E-mail</span><input type="email" id="loginEmail" autocomplete="username"
+          placeholder="ton@email.com" required /></label>
+      <label class="field"><span>Mot de passe</span><input type="password" id="loginPass"
+          autocomplete="current-password" placeholder="••••••••" required /></label>
+      <small class="error" id="loginError"></small>
+      <button type="submit" class="btn btn--primary btn--lg btn--block" id="loginBtn">Se connecter <span
+          class="btn__circle"><svg class="ico">
+            <use href="#i-arrow" />
+          </svg></span></button>
+    </form>
+  </div>
 
-<!-- ===== Icônes (sprite) ===== -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-sunrise" viewBox="0 0 24 24"><path d="M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0"/></symbol>
-  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
-  <symbol id="i-sunset" viewBox="0 0 24 24"><path d="M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0"/></symbol>
-  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
-  <symbol id="i-stars" viewBox="0 0 24 24"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4M4 17v2M5 18H3"/></symbol>
-  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
-  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
-  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
-  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
-  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
-  <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
-  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
-  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
-  <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
-  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-3"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
-  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol>
-  <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2-10 5 10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></symbol>
-  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></symbol>
-  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4"/></symbol>
-  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
-  <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
-  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
-  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
-  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
-  <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
-  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
-</svg>
+  <!-- ===== Icônes (sprite) ===== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-sunrise" viewBox="0 0 24 24">
+      <path
+        d="M12 2v8M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M8 6l4-4 4 4M16 18a4 4 0 0 0-8 0" />
+    </symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="4" />
+      <path
+        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </symbol>
+    <symbol id="i-sunset" viewBox="0 0 24 24">
+      <path
+        d="M12 10V2M4.93 10.93l1.41 1.41M2 18h2M20 18h2M19.07 10.93l-1.41 1.41M22 22H2M16 6l-4 4-4-4M16 18a4 4 0 0 0-8 0" />
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </symbol>
+    <symbol id="i-stars" viewBox="0 0 24 24">
+      <path
+        d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z" />
+      <path d="M20 3v4M22 5h-4M4 17v2M5 18H3" />
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M5 12h14M12 5v14" />
+    </symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24">
+      <path d="M5 12h14" />
+    </symbol>
+    <symbol id="i-link" viewBox="0 0 24 24">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="M20 6 9 17l-5-5" />
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 24 24">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+    </symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24">
+      <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </symbol>
+    <symbol id="i-send" viewBox="0 0 24 24">
+      <path d="m22 2-7 20-4-9-9-4Z" />
+      <path d="M22 2 11 13" />
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M3 3v18h18M18 17V9M13 17V5M8 17v-3" />
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path
+        d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+      <path d="m9 12 2 2 4-4" />
+    </symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24">
+      <path d="M13 2 3 14h9l-1 8 10-12h-9z" />
+    </symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24">
+      <path d="m12 2-10 5 10 5 10-5z" />
+      <path d="m2 17 10 5 10-5M2 12l10 5 10-5" />
+    </symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24">
+      <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    </symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24">
+      <rect x="2" y="3" width="20" height="5" rx="1" />
+      <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4" />
+    </symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24">
+      <path d="M3 7v6h6" />
+      <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </symbol>
+    <symbol id="i-target" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </symbol>
+    <symbol id="i-save" viewBox="0 0 24 24">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <path d="M17 21v-8H7v8M7 3v5h8" />
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+    </symbol>
+    <symbol id="i-list" viewBox="0 0 24 24">
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24">
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+    </symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24">
+      <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+    </symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </symbol>
+  </svg>
 
-<div class="app" id="app">
+  <div class="app" id="app">
 
-  <!-- ===== SIDEBAR ===== -->
-  <aside class="sidebar" id="sidebar" aria-label="Menu principal">
-    <a href="#/overview" class="brand" aria-label="GLAgency">
-      <img src="images/logo-mark.svg" alt="" class="brand__mark" width="42" height="42" />
-      <span class="brand__name">GL<b>Agency</b></span>
-    </a>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+      <a href="#/overview" class="brand" aria-label="GLAgency">
+        <img src="images/logo-mark.svg" alt="" class="brand__mark" width="42" height="42" />
+        <span class="brand__name">GL<b>Agency</b></span>
+      </a>
 
-    <p class="side-label">Pilotage</p>
-    <nav class="side-nav">
-      <a href="#/overview" class="side-link" data-view="overview"><svg class="ico"><use href="#i-grid"/></svg><span>Vue d'ensemble</span></a>
-      <a href="#/new" class="side-link" data-view="new"><svg class="ico"><use href="#i-plus"/></svg><span>Nouvelle demande</span></a>
-      <a href="#/requests" class="side-link" data-view="requests"><svg class="ico"><use href="#i-list"/></svg><span>Demandes</span><em id="navCount">0</em></a>
-      <a href="#/shifts" class="side-link" data-view="shifts"><svg class="ico"><use href="#i-clock"/></svg><span>Shifts</span></a>
-    </nav>
+      <p class="side-label">Pilotage</p>
+      <nav class="side-nav">
+        <a href="#/overview" class="side-link" data-view="overview"><svg class="ico">
+            <use href="#i-grid" />
+          </svg><span>Vue d'ensemble</span></a>
+        <a href="#/new" class="side-link" data-view="new"><svg class="ico">
+            <use href="#i-plus" />
+          </svg><span>Nouvelle demande</span></a>
+        <a href="#/requests" class="side-link" data-view="requests"><svg class="ico">
+            <use href="#i-list" />
+          </svg><span>Demandes</span><em id="navCount">0</em></a>
+        <a href="#/shifts" class="side-link" data-view="shifts"><svg class="ico">
+            <use href="#i-clock" />
+          </svg><span>Shifts</span></a>
+      </nav>
 
-    <p class="side-label">Suivi</p>
-    <nav class="side-nav">
-      <a href="#/activity" class="side-link" data-view="activity"><svg class="ico"><use href="#i-activity"/></svg><span>Activité</span></a>
-      <a href="#/tools" class="side-link" data-view="tools"><svg class="ico"><use href="#i-sliders"/></svg><span>Outils</span></a>
-    </nav>
+      <p class="side-label">Suivi</p>
+      <nav class="side-nav">
+        <a href="#/activity" class="side-link" data-view="activity"><svg class="ico">
+            <use href="#i-activity" />
+          </svg><span>Activité</span></a>
+        <a href="#/tools" class="side-link" data-view="tools"><svg class="ico">
+            <use href="#i-sliders" />
+          </svg><span>Outils</span></a>
+      </nav>
 
-    <div class="side-card">
-      <span class="side-card__ico"><svg class="ico" id="sideLockIcon"><use href="#i-lock"/></svg></span>
-      <p><b id="sideRole">Mode consultation</b><small id="sideRoleSub">Déverrouille pour gérer les envois.</small></p>
-      <button type="button" class="btn btn--primary btn--sm btn--block-sm" id="sideTrainerBtn">Espace formateur</button>
-    </div>
-  </aside>
-  <div class="scrim" id="scrim"></div>
-
-  <!-- ===== CONTENU ===== -->
-  <div class="main">
-    <header class="topbar">
-      <button class="burger" id="burger" type="button" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
-      <div class="topbar__title">
-        <h1 id="pageTitle">Vue d'ensemble</h1>
-        <p id="pageSub">Couverture en direct de tes 5 shifts</p>
+      <div class="side-card">
+        <span class="side-card__ico"><svg class="ico" id="sideLockIcon">
+            <use href="#i-lock" />
+          </svg></span>
+        <p><b id="sideRole">Mode consultation</b><small id="sideRoleSub">Déverrouille pour gérer les envois.</small></p>
+        <button type="button" class="btn btn--primary btn--sm btn--block-sm" id="sideTrainerBtn">Espace
+          formateur</button>
       </div>
-      <div class="topbar__right">
-        <span class="sync" id="syncDot" title="Synchronisé en direct"></span>
-        <span class="datechip"><svg class="ico"><use href="#i-calendar"/></svg><span id="todayChip"></span></span>
-        <button class="trainer-btn" id="trainerBtn" type="button" aria-label="Espace formateur">
-          <svg class="ico" id="trainerIcon"><use href="#i-lock"/></svg><span id="trainerLabel">Espace formateur</span>
-        </button>
-        <a href="#/new" class="btn btn--primary btn--sm topbar__cta"><svg class="ico"><use href="#i-plus"/></svg><span>Nouvelle demande</span></a>
-      </div>
-    </header>
+    </aside>
+    <div class="scrim" id="scrim"></div>
 
-    <main class="content" id="content">
+    <!-- ===== CONTENU ===== -->
+    <div class="main">
+      <header class="topbar">
+        <button class="burger" id="burger" type="button" aria-label="Ouvrir le menu"
+          aria-expanded="false"><span></span><span></span><span></span></button>
+        <div class="topbar__title">
+          <h1 id="pageTitle">Vue d'ensemble</h1>
+          <p id="pageSub">Couverture en direct de tes 5 shifts</p>
+        </div>
+        <div class="topbar__right">
+          <span class="sync" id="syncDot" title="Synchronisé en direct"></span>
+          <span class="datechip"><svg class="ico">
+              <use href="#i-calendar" />
+            </svg><span id="todayChip"></span></span>
+          <button class="trainer-btn" id="trainerBtn" type="button" aria-label="Espace formateur">
+            <svg class="ico" id="trainerIcon">
+              <use href="#i-lock" />
+            </svg><span id="trainerLabel">Espace formateur</span>
+          </button>
+          <a href="#/new" class="btn btn--primary btn--sm topbar__cta"><svg class="ico">
+              <use href="#i-plus" />
+            </svg><span>Nouvelle demande</span></a>
+        </div>
+      </header>
 
-      <!-- ========== VUE D'ENSEMBLE ========== -->
-      <section class="view" id="view-overview">
-        <div class="banner">
-          <div class="banner__text">
-            <span class="pill pill--dark" id="bannerDate"></span>
-            <h2>Chaque shift couvert,<br />chaque manager <span class="hl">satisfait</span></h2>
-            <p id="bannerText">Aucune demande pour le moment.</p>
-            <div class="banner__cta">
-              <a href="#/new" class="btn btn--light">Nouvelle demande <span class="btn__circle"><svg class="ico"><use href="#i-arrow"/></svg></span></a>
-              <a href="#/requests" class="btn btn--ghost">Voir les demandes</a>
+      <main class="content" id="content">
+
+        <!-- ========== VUE D'ENSEMBLE ========== -->
+        <section class="view" id="view-overview">
+          <div class="banner">
+            <div class="banner__text">
+              <span class="pill pill--dark" id="bannerDate"></span>
+              <h2>Chaque shift couvert,<br />chaque manager <span class="hl">satisfait</span></h2>
+              <p id="bannerText">Aucune demande pour le moment.</p>
+              <div class="banner__cta">
+                <a href="#/new" class="btn btn--light">Nouvelle demande <span class="btn__circle"><svg class="ico">
+                      <use href="#i-arrow" />
+                    </svg></span></a>
+                <a href="#/requests" class="btn btn--ghost">Voir les demandes</a>
+              </div>
+            </div>
+            <div class="banner__stat">
+              <div class="ring ring--lg" aria-hidden="true">
+                <svg viewBox="0 0 64 64">
+                  <circle cx="32" cy="32" r="26" class="ring__bg" />
+                  <circle cx="32" cy="32" r="26" class="ring__fg" id="bannerRing" />
+                </svg>
+                <b id="bannerPct">0%</b>
+              </div>
+              <p><b>Couverture globale</b><span id="bannerRingText">chatters envoyés / demandés</span></p>
             </div>
           </div>
-          <div class="banner__stat">
-            <div class="ring ring--lg" aria-hidden="true">
-              <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" class="ring__bg"/><circle cx="32" cy="32" r="26" class="ring__fg" id="bannerRing"/></svg>
-              <b id="bannerPct">0%</b>
-            </div>
-            <p><b>Couverture globale</b><span id="bannerRingText">chatters envoyés / demandés</span></p>
-          </div>
-        </div>
 
-        <div class="kpis">
-          <article class="kpi"><span class="kpi__ico"><svg class="ico"><use href="#i-layers"/></svg></span><div><p>Demandes ouvertes</p><strong id="kpiOpen">0</strong></div></article>
-          <article class="kpi"><span class="kpi__ico"><svg class="ico"><use href="#i-users"/></svg></span><div><p>Chatters demandés</p><strong id="kpiReq">0</strong></div></article>
-          <article class="kpi"><span class="kpi__ico"><svg class="ico"><use href="#i-send"/></svg></span><div><p>Chatters envoyés</p><strong id="kpiSent">0</strong></div></article>
-          <article class="kpi kpi--accent"><span class="kpi__ico"><svg class="ico"><use href="#i-target"/></svg></span><div><p>Restent à envoyer</p><strong id="kpiRem">0</strong></div></article>
-        </div>
-
-        <div class="grid-2">
-          <article class="card">
-            <header class="card__head"><div><h3>Couverture par shift</h3><p>Chatters envoyés sur chatters demandés</p></div><a href="#/shifts" class="link">Détails ></a></header>
-            <div class="coverage" id="coverageList"></div>
-          </article>
-          <article class="card card--dark">
-            <header class="card__head"><div><h3>Les 24 heures</h3><p>La partie claire = chatters déjà envoyés</p></div></header>
-            <div class="wheel-wrap" id="heroWheel" role="img" aria-label="Roue des 24 heures avec les 5 shifts"></div>
-            <ul class="legend" id="wheelLegend"></ul>
-          </article>
-        </div>
-
-        <div class="grid-2">
-          <article class="card">
-            <header class="card__head"><div><h3>À traiter en priorité</h3><p>Urgences d'abord, puis le plus gros manque</p></div><a href="#/requests" class="link">Tout voir ></a></header>
-            <div class="rows" id="todoList"></div>
-          </article>
-          <article class="card">
-            <header class="card__head"><div><h3>Activité récente</h3><p>Dernières demandes et envois</p></div><a href="#/activity" class="link">Historique ></a></header>
-            <ul class="feed" id="recentFeed"></ul>
-          </article>
-        </div>
-      </section>
-
-      <!-- ========== NOUVELLE DEMANDE ========== -->
-      <section class="view" id="view-new">
-        <article class="card share">
-          <div class="share__head">
-            <span class="share__ico"><svg class="ico"><use href="#i-link"/></svg></span>
-            <div><h3>Envoie le formulaire à tes managers</h3><p>Ils remplissent leur demande eux-mêmes : elle arrive directement dans ton dashboard.</p></div>
-          </div>
-          <div class="share__row">
-            <input type="text" id="shareLink" readonly aria-label="Lien du formulaire" />
-            <button type="button" class="btn btn--primary btn--sm" id="copyLink"><svg class="ico"><use href="#i-link"/></svg> Copier le lien</button>
-            <a class="btn btn--soft btn--sm" id="waLink" target="_blank" rel="noopener"><svg class="ico"><use href="#i-send"/></svg> WhatsApp</a>
-            <a class="btn btn--outline btn--sm" id="openForm" target="_blank" rel="noopener"><svg class="ico"><use href="#i-arrow"/></svg> Ouvrir</a>
-          </div>
-          <p class="share__status" id="shareStatus"></p>
-        </article>
-        <h2 class="subhead">Ou saisis une demande toi-même</h2>
-        <form class="newgrid" id="requestForm" novalidate>
-          <div class="newgrid__main">
-            <article class="card">
-              <header class="card__head"><div><h3>1 · Qui fait la demande ?</h3><p>Ces informations seront visibles dans le suivi.</p></div></header>
-              <div class="form__row">
-                <label class="field">
-                  <span>Nom du manager</span>
-                  <input type="text" name="manager" placeholder="Ex : Karim B." maxlength="60" autocomplete="off" required />
-                  <small class="error"></small>
-                </label>
-                <label class="field">
-                  <span>Équipe / compte <em>(facultatif)</em></span>
-                  <input type="text" name="team" placeholder="Ex : Team Alpha" maxlength="60" autocomplete="off" />
-                </label>
+          <div class="kpis">
+            <article class="kpi"><span class="kpi__ico"><svg class="ico">
+                  <use href="#i-layers" />
+                </svg></span>
+              <div>
+                <p>Demandes ouvertes</p><strong id="kpiOpen">0</strong>
               </div>
-              <div class="field">
-                <span>Priorité</span>
-                <div class="seg" id="prioritySeg">
-                  <label class="seg__opt is-selected"><input type="radio" name="priority" value="normal" checked /> Normale</label>
-                  <label class="seg__opt seg__opt--urgent"><input type="radio" name="priority" value="urgent" /> <svg class="ico"><use href="#i-zap"/></svg> Urgente</label>
-                </div>
-              </div>
-              <label class="field">
-                <span>Précisions <em>(facultatif)</em></span>
-                <textarea name="note" rows="2" maxlength="300" placeholder="Langue, expérience souhaitée, date de début…"></textarea>
-              </label>
             </article>
+            <article class="kpi"><span class="kpi__ico"><svg class="ico">
+                  <use href="#i-users" />
+                </svg></span>
+              <div>
+                <p>Chatters demandés</p><strong id="kpiReq">0</strong>
+              </div>
+            </article>
+            <article class="kpi"><span class="kpi__ico"><svg class="ico">
+                  <use href="#i-send" />
+                </svg></span>
+              <div>
+                <p>Chatters envoyés</p><strong id="kpiSent">0</strong>
+              </div>
+            </article>
+            <article class="kpi kpi--accent"><span class="kpi__ico"><svg class="ico">
+                  <use href="#i-target" />
+                </svg></span>
+              <div>
+                <p>Restent à envoyer</p><strong id="kpiRem">0</strong>
+              </div>
+            </article>
+          </div>
 
+          <div class="grid-2">
             <article class="card">
               <header class="card__head">
-                <div><h3>2 · Shifts et nombre de chatters</h3><p>Coche chaque shift souhaité et indique directement le nombre de chatters.</p></div>
-                <button type="button" class="btn btn--soft btn--xs" id="pickAll">Tout sélectionner</button>
+                <div>
+                  <h3>Couverture par shift</h3>
+                  <p>Chatters envoyés sur chatters demandés</p>
+                </div><a href="#/shifts" class="link">Détails ></a>
               </header>
-              <div class="shift-pick" id="shiftPick"></div>
-              <small class="error" id="shiftError"></small>
+              <div class="coverage" id="coverageList"></div>
+            </article>
+            <article class="card card--dark">
+              <header class="card__head">
+                <div>
+                  <h3>Les 24 heures</h3>
+                  <p>La partie claire = chatters déjà envoyés</p>
+                </div>
+              </header>
+              <div class="wheel-wrap" id="heroWheel" role="img" aria-label="Roue des 24 heures avec les 5 shifts"></div>
+              <ul class="legend" id="wheelLegend"></ul>
             </article>
           </div>
 
-          <aside class="card summary">
-            <h3>Récapitulatif</h3>
-            <p class="summary__hint" id="summaryWho">Nouvelle demande</p>
-            <ul class="summary__list" id="summaryList"></ul>
-            <div class="summary__total"><span>Total demandé</span><strong id="summaryTotal">0</strong></div>
-            <button type="submit" class="btn btn--primary btn--lg btn--block">Envoyer la demande <span class="btn__circle"><svg class="ico"><use href="#i-arrow"/></svg></span></button>
-            <p class="summary__foot">Le formateur est prévenu dès que ta demande est enregistrée.</p>
-          </aside>
-        </form>
-      </section>
-
-      <!-- ========== DEMANDES ========== -->
-      <section class="view" id="view-requests">
-        <div class="panel">
-          <div class="toolbar">
-            <label class="search">
-              <svg class="ico"><use href="#i-search"/></svg>
-              <input type="search" id="searchInput" placeholder="Rechercher un manager, une équipe…" aria-label="Rechercher" />
-            </label>
-            <select id="statusFilter" aria-label="Filtrer par statut">
-              <option value="active">Demandes actives</option>
-              <option value="pending">En attente</option>
-              <option value="partial">Partielles</option>
-              <option value="done">Satisfaites</option>
-              <option value="archived">Archivées</option>
-            </select>
-            <button type="button" class="btn btn--outline btn--sm" id="exportCsv"><svg class="ico"><use href="#i-download"/></svg> Export CSV</button>
+          <div class="grid-2">
+            <article class="card">
+              <header class="card__head">
+                <div>
+                  <h3>À traiter en priorité</h3>
+                  <p>Urgences d'abord, puis le plus gros manque</p>
+                </div><a href="#/requests" class="link">Tout voir ></a>
+              </header>
+              <div class="rows" id="todoList"></div>
+            </article>
+            <article class="card">
+              <header class="card__head">
+                <div>
+                  <h3>Activité récente</h3>
+                  <p>Dernières demandes et envois</p>
+                </div><a href="#/activity" class="link">Historique ></a>
+              </header>
+              <ul class="feed" id="recentFeed"></ul>
+            </article>
           </div>
-          <div class="chips" id="shiftFilters" role="group" aria-label="Filtrer par shift"></div>
-          <p class="demo-note" id="demoNote" hidden>Ces demandes sont des <b>exemples</b> pour la démonstration. <button type="button" id="clearDemo">Supprimer les exemples</button></p>
-        </div>
+        </section>
 
-        <div class="req-list" id="requestList"></div>
-        <div class="empty card" id="emptyState" hidden>
-          <span class="empty__ico"><svg class="ico"><use href="#i-message"/></svg></span>
-          <h4>Aucune demande à afficher</h4>
-          <p>Les demandes des managers apparaîtront ici.</p>
-          <a href="#/new" class="btn btn--primary btn--sm">Créer une demande</a>
-        </div>
-      </section>
+        <!-- ========== NOUVELLE DEMANDE ========== -->
+        <section class="view" id="view-new">
+          <article class="card share">
+            <div class="share__head">
+              <span class="share__ico"><svg class="ico">
+                  <use href="#i-link" />
+                </svg></span>
+              <div>
+                <h3>Envoie le formulaire à tes managers</h3>
+                <p>Ils remplissent leur demande eux-mêmes : elle arrive directement dans ton dashboard.</p>
+              </div>
+            </div>
+            <div class="share__row">
+              <input type="text" id="shareLink" readonly aria-label="Lien du formulaire" />
+              <button type="button" class="btn btn--primary btn--sm" id="copyLink"><svg class="ico">
+                  <use href="#i-link" />
+                </svg> Copier le lien</button>
+              <a class="btn btn--soft btn--sm" id="waLink" target="_blank" rel="noopener"><svg class="ico">
+                  <use href="#i-send" />
+                </svg> WhatsApp</a>
+              <a class="btn btn--outline btn--sm" id="openForm" target="_blank" rel="noopener"><svg class="ico">
+                  <use href="#i-arrow" />
+                </svg> Ouvrir</a>
+            </div>
+            <p class="share__status" id="shareStatus"></p>
+          </article>
+          <h2 class="subhead">Ou saisis une demande toi-même</h2>
+          <form class="newgrid" id="requestForm" novalidate>
+            <div class="newgrid__main">
+              <article class="card">
+                <header class="card__head">
+                  <div>
+                    <h3>1 · Qui fait la demande ?</h3>
+                    <p>Ces informations seront visibles dans le suivi.</p>
+                  </div>
+                </header>
+                <div class="form__row">
+                  <label class="field">
+                    <span>Nom du manager</span>
+                    <input type="text" name="manager" placeholder="Ex : Karim B." maxlength="60" autocomplete="off"
+                      required />
+                    <small class="error"></small>
+                  </label>
+                  <label class="field">
+                    <span>Équipe / compte <em>(facultatif)</em></span>
+                    <input type="text" name="team" placeholder="Ex : Team Alpha" maxlength="60" autocomplete="off" />
+                  </label>
+                </div>
+                <div class="field">
+                  <span>Priorité</span>
+                  <div class="seg" id="prioritySeg">
+                    <label class="seg__opt is-selected"><input type="radio" name="priority" value="normal" checked />
+                      Normale</label>
+                    <label class="seg__opt seg__opt--urgent"><input type="radio" name="priority" value="urgent" /> <svg
+                        class="ico">
+                        <use href="#i-zap" />
+                      </svg> Urgente</label>
+                  </div>
+                </div>
+                <label class="field">
+                  <span>Précisions <em>(facultatif)</em></span>
+                  <textarea name="note" rows="2" maxlength="300"
+                    placeholder="Expérience souhaitée, date de début…"></textarea>
+                </label>
+              </article>
 
-      <!-- ========== SHIFTS ========== -->
-      <section class="view" id="view-shifts">
-        <div class="shift-detail" id="shiftDetail"></div>
-      </section>
+              <article class="card">
+                <header class="card__head">
+                  <div>
+                    <h3>2 · Shifts et nombre de chatters</h3>
+                    <p>Coche chaque shift souhaité et indique directement le nombre de chatters.</p>
+                  </div>
+                  <button type="button" class="btn btn--soft btn--xs" id="pickAll">Tout sélectionner</button>
+                </header>
+                <div class="shift-pick" id="shiftPick"></div>
+                <small class="error" id="shiftError"></small>
+              </article>
+            </div>
 
-      <!-- ========== ACTIVITÉ ========== -->
-      <section class="view" id="view-activity">
-        <article class="card">
-          <header class="card__head"><div><h3>Journal d'activité</h3><p>Toutes les demandes et tous les envois, du plus récent au plus ancien.</p></div></header>
-          <ul class="feed feed--full" id="activityFeed"></ul>
-        </article>
-      </section>
+            <aside class="card summary">
+              <h3>Récapitulatif</h3>
+              <p class="summary__hint" id="summaryWho">Nouvelle demande</p>
+              <ul class="summary__list" id="summaryList"></ul>
+              <div class="summary__total"><span>Total demandé</span><strong id="summaryTotal">0</strong></div>
+              <button type="submit" class="btn btn--primary btn--lg btn--block">Envoyer la demande <span
+                  class="btn__circle"><svg class="ico">
+                    <use href="#i-arrow" />
+                  </svg></span></button>
+              <p class="summary__foot">Le formateur est prévenu dès que ta demande est enregistrée.</p>
+            </aside>
+          </form>
+        </section>
 
-      <!-- ========== OUTILS ========== -->
-      <section class="view" id="view-tools">
-        <div class="tools">
-          <article class="card tool">
-            <span class="tool__ico"><svg class="ico"><use href="#i-download"/></svg></span>
-            <h3>Export Excel / CSV</h3>
-            <p>Télécharge toutes les demandes, une ligne par shift demandé.</p>
-            <button type="button" class="btn btn--outline btn--sm" id="exportAll">Exporter</button>
-          </article>
-          <article class="card tool only-trainer-card">
-            <span class="tool__ico"><svg class="ico"><use href="#i-save"/></svg></span>
-            <h3>Sauvegarde</h3>
-            <p>Télécharge un fichier JSON pour ne rien perdre ou transférer les données.</p>
-            <button type="button" class="btn btn--soft btn--sm" id="backupBtn">Sauvegarder</button>
-          </article>
-          <article class="card tool only-trainer-card">
-            <span class="tool__ico"><svg class="ico"><use href="#i-upload"/></svg></span>
-            <h3>Restauration</h3>
-            <p>Recharge une sauvegarde JSON. Les données actuelles seront remplacées.</p>
-            <label class="btn btn--soft btn--sm" for="restoreFile">Restaurer</label>
-            <input type="file" id="restoreFile" accept="application/json" hidden />
-          </article>
-          <article class="card tool only-trainer-card local-only">
-            <span class="tool__ico"><svg class="ico"><use href="#i-shield"/></svg></span>
-            <h3>Code formateur</h3>
-            <p>Change le code qui déverrouille le mode formateur.</p>
-            <form id="pinChangeForm" class="inline-form">
-              <input type="password" id="newPin" inputmode="numeric" placeholder="Nouveau code (4 à 8 chiffres)" autocomplete="off" aria-label="Nouveau code" />
-              <button type="submit" class="btn btn--soft btn--sm">Changer</button>
-            </form>
-            <small class="error" id="pinChangeError"></small>
-          </article>
-          <article class="card tool tool--danger only-trainer-card">
-            <span class="tool__ico"><svg class="ico"><use href="#i-trash"/></svg></span>
-            <h3>Zone sensible</h3>
-            <p>Supprime toutes les demandes. Pense à faire une sauvegarde avant.</p>
-            <button type="button" class="btn btn--danger btn--sm" id="clearBtn">Tout effacer</button>
-          </article>
-          <article class="card tool tool--lock only-visitor-card">
-            <span class="tool__ico"><svg class="ico"><use href="#i-lock"/></svg></span>
-            <h3>Outils réservés au formateur</h3>
-            <p>Sauvegarde, restauration, code et suppression sont disponibles après déverrouillage.</p>
-            <button type="button" class="btn btn--primary btn--sm" data-open-pin>Déverrouiller</button>
-          </article>
-        </div>
-      </section>
+        <!-- ========== DEMANDES ========== -->
+        <section class="view" id="view-requests">
+          <div class="panel">
+            <div class="toolbar">
+              <label class="search">
+                <svg class="ico">
+                  <use href="#i-search" />
+                </svg>
+                <input type="search" id="searchInput" placeholder="Rechercher un manager, une équipe…"
+                  aria-label="Rechercher" />
+              </label>
+              <select id="statusFilter" aria-label="Filtrer par statut">
+                <option value="active">Demandes actives</option>
+                <option value="pending">En attente</option>
+                <option value="partial">Partielles</option>
+                <option value="done">Satisfaites</option>
+                <option value="archived">Archivées</option>
+              </select>
+              <button type="button" class="btn btn--outline btn--sm" id="exportCsv"><svg class="ico">
+                  <use href="#i-download" />
+                </svg> Export CSV</button>
+            </div>
+            <div class="chips" id="shiftFilters" role="group" aria-label="Filtrer par shift"></div>
+            <p class="demo-note" id="demoNote" hidden>Ces demandes sont des <b>exemples</b> pour la démonstration.
+              <button type="button" id="clearDemo">Supprimer les exemples</button></p>
+          </div>
 
-    </main>
-  </div>
-</div>
+          <div class="req-list" id="requestList"></div>
+          <div class="empty card" id="emptyState" hidden>
+            <span class="empty__ico"><svg class="ico">
+                <use href="#i-message" />
+              </svg></span>
+            <h4>Aucune demande à afficher</h4>
+            <p>Les demandes des managers apparaîtront ici.</p>
+            <a href="#/new" class="btn btn--primary btn--sm">Créer une demande</a>
+          </div>
+        </section>
 
-<!-- ===== MODALES ===== -->
-<dialog class="modal" id="pinDialog" aria-labelledby="pinTitle">
-  <form method="dialog" class="modal__body" id="pinForm">
-    <span class="modal__ico"><svg class="ico"><use href="#i-lock"/></svg></span>
-    <h3 id="pinTitle">Espace formateur</h3>
-    <p>Saisis ton code pour gérer les envois de chatters.</p>
-    <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" placeholder="Code formateur" aria-label="Code formateur" />
-    <small class="error" id="pinError"></small>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--outline" data-close>Annuler</button>
-      <button type="submit" class="btn btn--primary">Déverrouiller</button>
+        <!-- ========== SHIFTS ========== -->
+        <section class="view" id="view-shifts">
+          <div class="shift-detail" id="shiftDetail"></div>
+        </section>
+
+        <!-- ========== ACTIVITÉ ========== -->
+        <section class="view" id="view-activity">
+          <article class="card">
+            <header class="card__head">
+              <div>
+                <h3>Journal d'activité</h3>
+                <p>Toutes les demandes et tous les envois, du plus récent au plus ancien.</p>
+              </div>
+            </header>
+            <ul class="feed feed--full" id="activityFeed"></ul>
+          </article>
+        </section>
+
+        <!-- ========== OUTILS ========== -->
+        <section class="view" id="view-tools">
+          <div class="tools">
+            <article class="card tool">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-download" />
+                </svg></span>
+              <h3>Export Excel / CSV</h3>
+              <p>Télécharge toutes les demandes, une ligne par shift demandé.</p>
+              <button type="button" class="btn btn--outline btn--sm" id="exportAll">Exporter</button>
+            </article>
+            <article class="card tool only-trainer-card">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-save" />
+                </svg></span>
+              <h3>Sauvegarde</h3>
+              <p>Télécharge un fichier JSON pour ne rien perdre ou transférer les données.</p>
+              <button type="button" class="btn btn--soft btn--sm" id="backupBtn">Sauvegarder</button>
+            </article>
+            <article class="card tool only-trainer-card">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-upload" />
+                </svg></span>
+              <h3>Restauration</h3>
+              <p>Recharge une sauvegarde JSON. Les données actuelles seront remplacées.</p>
+              <label class="btn btn--soft btn--sm" for="restoreFile">Restaurer</label>
+              <input type="file" id="restoreFile" accept="application/json" hidden />
+            </article>
+            <article class="card tool only-trainer-card local-only">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-shield" />
+                </svg></span>
+              <h3>Code formateur</h3>
+              <p>Change le code qui déverrouille le mode formateur.</p>
+              <form id="pinChangeForm" class="inline-form">
+                <input type="password" id="newPin" inputmode="numeric" placeholder="Nouveau code (4 à 8 chiffres)"
+                  autocomplete="off" aria-label="Nouveau code" />
+                <button type="submit" class="btn btn--soft btn--sm">Changer</button>
+              </form>
+              <small class="error" id="pinChangeError"></small>
+            </article>
+            <article class="card tool tool--danger only-trainer-card">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-trash" />
+                </svg></span>
+              <h3>Zone sensible</h3>
+              <p>Supprime toutes les demandes. Pense à faire une sauvegarde avant.</p>
+              <button type="button" class="btn btn--danger btn--sm" id="clearBtn">Tout effacer</button>
+            </article>
+            <article class="card tool tool--lock only-visitor-card">
+              <span class="tool__ico"><svg class="ico">
+                  <use href="#i-lock" />
+                </svg></span>
+              <h3>Outils réservés au formateur</h3>
+              <p>Sauvegarde, restauration, code et suppression sont disponibles après déverrouillage.</p>
+              <button type="button" class="btn btn--primary btn--sm" data-open-pin>Déverrouiller</button>
+            </article>
+          </div>
+        </section>
+
+      </main>
     </div>
-  </form>
-</dialog>
+  </div>
 
-<dialog class="modal" id="sendDialog" aria-labelledby="sendTitle">
-  <form method="dialog" class="modal__body" id="sendForm">
-    <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico"><use href="#i-x"/></svg></button>
-    <span class="modal__ico"><svg class="ico"><use href="#i-send"/></svg></span>
-    <h3 id="sendTitle">Envoyer des chatters</h3>
-    <p id="sendInfo"></p>
-    <div class="field">
-      <span>Nombre de chatters envoyés</span>
-      <div class="stepper">
-        <button type="button" data-send-step="-1" aria-label="Moins"><svg class="ico"><use href="#i-minus"/></svg></button>
-        <input type="number" id="sendCount" min="1" value="1" inputmode="numeric" aria-label="Nombre de chatters envoyés" />
-        <button type="button" data-send-step="1" aria-label="Plus"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <!-- ===== MODALES ===== -->
+  <dialog class="modal" id="pinDialog" aria-labelledby="pinTitle">
+    <form method="dialog" class="modal__body" id="pinForm">
+      <span class="modal__ico"><svg class="ico">
+          <use href="#i-lock" />
+        </svg></span>
+      <h3 id="pinTitle">Espace formateur</h3>
+      <p>Saisis ton code pour gérer les envois de chatters.</p>
+      <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" placeholder="Code formateur"
+        aria-label="Code formateur" />
+      <small class="error" id="pinError"></small>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--outline" data-close>Annuler</button>
+        <button type="submit" class="btn btn--primary">Déverrouiller</button>
       </div>
-      <small class="error" id="sendError"></small>
-    </div>
-    <label class="field">
-      <span>Noms des chatters <em>(facultatif)</em></span>
-      <textarea id="sendNames" rows="2" placeholder="Ex : Amina, Josué, Léa"></textarea>
-    </label>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--soft" id="sendAll">Envoyer tout le reste</button>
-      <button type="submit" class="btn btn--primary">Confirmer l'envoi</button>
-    </div>
-  </form>
-</dialog>
+    </form>
+  </dialog>
 
-<dialog class="modal" id="editDialog" aria-labelledby="editTitle">
-  <form method="dialog" class="modal__body" id="editForm">
-    <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico"><use href="#i-x"/></svg></button>
-    <span class="modal__ico"><svg class="ico"><use href="#i-edit"/></svg></span>
-    <h3 id="editTitle">Modifier la demande</h3>
-    <p id="editInfo"></p>
-    <div class="edit-lines" id="editLines"></div>
-    <label class="field"><span>Priorité</span>
-      <select id="editPriority"><option value="normal">Normale</option><option value="urgent">Urgente</option></select>
-    </label>
-    <small class="error" id="editError"></small>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--outline" data-close>Annuler</button>
-      <button type="submit" class="btn btn--primary">Enregistrer</button>
+  <dialog class="modal" id="sendDialog" aria-labelledby="sendTitle">
+    <form method="dialog" class="modal__body" id="sendForm">
+      <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico">
+          <use href="#i-x" />
+        </svg></button>
+      <span class="modal__ico"><svg class="ico">
+          <use href="#i-send" />
+        </svg></span>
+      <h3 id="sendTitle">Envoyer des chatters</h3>
+      <p id="sendInfo"></p>
+      <div class="field">
+        <span>Nombre de chatters envoyés</span>
+        <div class="stepper">
+          <button type="button" data-send-step="-1" aria-label="Moins"><svg class="ico">
+              <use href="#i-minus" />
+            </svg></button>
+          <input type="number" id="sendCount" min="1" value="1" inputmode="numeric"
+            aria-label="Nombre de chatters envoyés" />
+          <button type="button" data-send-step="1" aria-label="Plus"><svg class="ico">
+              <use href="#i-plus" />
+            </svg></button>
+        </div>
+        <small class="error" id="sendError"></small>
+      </div>
+      <label class="field">
+        <span>Noms des chatters <em>(facultatif)</em></span>
+        <textarea id="sendNames" rows="2" placeholder="Ex : Amina, Josué, Léa"></textarea>
+      </label>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--soft" id="sendAll">Envoyer tout le reste</button>
+        <button type="submit" class="btn btn--primary">Confirmer l'envoi</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="editDialog" aria-labelledby="editTitle">
+    <form method="dialog" class="modal__body" id="editForm">
+      <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico">
+          <use href="#i-x" />
+        </svg></button>
+      <span class="modal__ico"><svg class="ico">
+          <use href="#i-edit" />
+        </svg></span>
+      <h3 id="editTitle">Modifier la demande</h3>
+      <p id="editInfo"></p>
+      <div class="edit-lines" id="editLines"></div>
+      <label class="field"><span>Priorité</span>
+        <select id="editPriority">
+          <option value="normal">Normale</option>
+          <option value="urgent">Urgente</option>
+        </select>
+      </label>
+      <small class="error" id="editError"></small>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--outline" data-close>Annuler</button>
+        <button type="submit" class="btn btn--primary">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal modal--wide" id="historyDialog" aria-labelledby="historyTitle">
+    <div class="modal__body">
+      <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico">
+          <use href="#i-x" />
+        </svg></button>
+      <span class="modal__ico"><svg class="ico">
+          <use href="#i-clock" />
+        </svg></span>
+      <h3 id="historyTitle">Historique de la demande</h3>
+      <p id="historyInfo"></p>
+      <ul class="timeline" id="historyList"></ul>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--soft only-trainer" id="undoLast"><svg class="ico">
+            <use href="#i-undo" />
+          </svg> Annuler le dernier envoi</button>
+        <button type="button" class="btn btn--primary" data-close>Fermer</button>
+      </div>
     </div>
-  </form>
-</dialog>
+  </dialog>
 
-<dialog class="modal modal--wide" id="historyDialog" aria-labelledby="historyTitle">
-  <div class="modal__body">
-    <button type="button" class="modal__close" data-close aria-label="Fermer"><svg class="ico"><use href="#i-x"/></svg></button>
-    <span class="modal__ico"><svg class="ico"><use href="#i-clock"/></svg></span>
-    <h3 id="historyTitle">Historique de la demande</h3>
-    <p id="historyInfo"></p>
-    <ul class="timeline" id="historyList"></ul>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--soft only-trainer" id="undoLast"><svg class="ico"><use href="#i-undo"/></svg> Annuler le dernier envoi</button>
-      <button type="button" class="btn btn--primary" data-close>Fermer</button>
-    </div>
-  </div>
-</dialog>
+  <dialog class="modal" id="confirmDialog" aria-labelledby="confirmTitle">
+    <form method="dialog" class="modal__body">
+      <span class="modal__ico modal__ico--danger"><svg class="ico">
+          <use href="#i-trash" />
+        </svg></span>
+      <h3 id="confirmTitle">Confirmer</h3>
+      <p id="confirmText"></p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--outline" data-close>Annuler</button>
+        <button type="submit" class="btn btn--danger-solid" id="confirmOk" value="ok">Confirmer</button>
+      </div>
+    </form>
+  </dialog>
 
-<dialog class="modal" id="confirmDialog" aria-labelledby="confirmTitle">
-  <form method="dialog" class="modal__body">
-    <span class="modal__ico modal__ico--danger"><svg class="ico"><use href="#i-trash"/></svg></span>
-    <h3 id="confirmTitle">Confirmer</h3>
-    <p id="confirmText"></p>
-    <div class="modal__actions">
-      <button type="button" class="btn btn--outline" data-close>Annuler</button>
-      <button type="submit" class="btn btn--danger-solid" id="confirmOk" value="ok">Confirmer</button>
-    </div>
-  </form>
-</dialog>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
 
-<div class="toasts" id="toasts" aria-live="polite"></div>
-
-<script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
