@@ -463,6 +463,7 @@ document.documentElement.classList.add("js");
 
   /* ---------- Nouvelle demande (multi-shifts) ---------- */
   const form = $("#requestForm");
+  const F = (n) => form.querySelector(`[name="${n}"]`);
   $("#shiftPick").innerHTML = SHIFTS.map((sh) => `
     <div class="pick" data-shift="${sh.id}" style="--c:${sh.color}">
       <label class="pick__main">
@@ -497,7 +498,7 @@ document.documentElement.classList.add("js");
       ? sel.map(({ shift, n }) => { const sh = getShift(shift); return `<li style="--c:${sh.color}"><span class="shift__ico">${ico(sh.icon)}</span><b>${esc(sh.name)}</b><em>${n}</em></li>`; }).join("")
       : `<li class="none">Aucun shift sélectionné.</li>`;
     $("#summaryTotal").textContent = sel.reduce((a, s) => a + s.n, 0);
-    const name = form.manager.value.trim();
+    const name = F("manager").value.trim();
     $("#summaryWho").textContent = name ? `Demande de ${name}` : "Nouvelle demande";
   }
 
@@ -508,7 +509,7 @@ document.documentElement.classList.add("js");
     updateSummary();
   });
   form.addEventListener("input", (e) => {
-    if (e.target === form.manager && form.manager.value.trim().length >= 2) { const f = form.manager.closest(".field"); f.classList.remove("invalid"); $(".error", f).textContent = ""; }
+    if (e.target === F("manager") && F("manager").value.trim().length >= 2) { const f = F("manager").closest(".field"); f.classList.remove("invalid"); $(".error", f).textContent = ""; }
     if (e.target.type === "number") { const v = parseInt(e.target.value, 10); if (v > 99) e.target.value = 99; }
     updateSummary();
   });
@@ -529,11 +530,11 @@ document.documentElement.classList.add("js");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const manager = form.manager.value.trim();
+    const manager = F("manager").value.trim();
     const sel = selection();
     let ok = true;
-    const mf = form.manager.closest(".field");
-    if (manager.length < 2) { mf.classList.add("invalid"); $(".error", mf).textContent = "Indique ton nom."; ok = false; form.manager.focus(); }
+    const mf = F("manager").closest(".field");
+    if (manager.length < 2) { mf.classList.add("invalid"); $(".error", mf).textContent = "Indique ton nom."; ok = false; F("manager").focus(); }
     else { mf.classList.remove("invalid"); $(".error", mf).textContent = ""; }
     if (!sel.length) { $("#shiftError").textContent = "Choisis au moins un shift."; ok = false; }
     else if (sel.some((s) => s.n < 1)) { $("#shiftError").textContent = "Chaque shift choisi doit avoir au moins 1 chatter."; ok = false; }
@@ -541,8 +542,8 @@ document.documentElement.classList.add("js");
     if (!ok) return;
 
     const req = {
-      id: uid(), manager, team: form.team.value.trim(), priority: form.querySelector('input[name="priority"]:checked').value,
-      note: form.note.value.trim(), createdAt: new Date().toISOString(), archived: false,
+      id: uid(), manager, team: F("team").value.trim(), priority: form.querySelector('input[name="priority"]:checked').value,
+      note: F("note").value.trim(), createdAt: new Date().toISOString(), archived: false,
       lines: SHIFTS.map((s) => sel.find((x) => x.shift === s.id)).filter(Boolean).map((s) => ({ shift: s.shift, requested: s.n, assigned: 0, history: [] })),
     };
     state.requests = state.requests.filter((r) => !r.demo).concat(req); // les exemples disparaissent à la 1re vraie demande
