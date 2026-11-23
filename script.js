@@ -542,8 +542,8 @@ document.documentElement.classList.add("js");
     if (!ok) return;
 
     const req = {
-      id: uid(), manager, team: F("team").value.trim(), priority: form.querySelector('input[name="priority"]:checked').value,
-      note: F("note").value.trim(), createdAt: new Date().toISOString(), archived: false,
+      id: uid(), manager, team: (F("team")?.value || "").trim(), priority: form.querySelector('input[name="priority"]:checked').value,
+      note: (F("note")?.value || "").trim(), createdAt: new Date().toISOString(), archived: false,
       lines: SHIFTS.map((s) => sel.find((x) => x.shift === s.id)).filter(Boolean).map((s) => ({ shift: s.shift, requested: s.n, assigned: 0, history: [] })),
     };
     state.requests = state.requests.filter((r) => !r.demo).concat(req); // les exemples disparaissent à la 1re vraie demande
