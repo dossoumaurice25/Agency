@@ -37,6 +37,7 @@ document.documentElement.classList.add("js");
     shifts:   ["Shifts", "Le détail de chaque créneau horaire"],
     activity: ["Activité", "Historique de toutes les demandes et de tous les envois"],
     tools:    ["Outils", "Export, sauvegarde et réglages"],
+    formation: ["Formation MyPuls", "Fiche de formation pour les chatters"],
   };
 
   /* ---------- Utilitaires ---------- */
