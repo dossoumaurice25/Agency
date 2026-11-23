@@ -123,9 +123,9 @@
     else if (!CLOUD) { $("#shiftError").textContent = "Connexion impossible. Recharge la page et réessaie."; return; }
 
     const req = {
-      id: uid(), manager, team: F("team").value.trim(),
+      id: uid(), manager, team: (F("team")?.value || "").trim(),
       priority: form.querySelector('input[name="priority"]:checked').value,
-      note: F("note").value.trim(), archived: false, created_at: new Date().toISOString(),
+      note: (F("note")?.value || "").trim(), archived: false, created_at: new Date().toISOString(),
       lines: SHIFTS.map((s) => sel.find((x) => x.shift === s.id)).filter(Boolean).map((s) => ({ shift: s.shift, requested: s.n, assigned: 0, history: [] })),
     };
 
