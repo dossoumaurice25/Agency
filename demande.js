@@ -34,6 +34,7 @@
   }
 
   const form = $("#requestForm");
+  const F = (n) => form.querySelector(`[name="${n}"]`);
   $("#shiftPick").innerHTML = SHIFTS.map((sh) => `
     <div class="pick" data-shift="${sh.id}" style="--c:${sh.color}">
       <label class="pick__main">
@@ -63,7 +64,7 @@
     const sel = selection();
     $("#summaryList").innerHTML = sel.length ? rows(sel) : `<li class="none">Aucun shift sélectionné.</li>`;
     $("#summaryTotal").textContent = sel.reduce((a, s) => a + s.n, 0);
-    const name = form.manager.value.trim();
+    const name = F("manager").value.trim();
     $("#summaryWho").textContent = name ? `Demande de ${name}` : "Nouvelle demande";
   }
 
@@ -74,7 +75,7 @@
     updateSummary();
   });
   form.addEventListener("input", (e) => {
-    if (e.target === form.manager && form.manager.value.trim().length >= 2) { const f = form.manager.closest(".field"); f.classList.remove("invalid"); $(".error", f).textContent = ""; }
+    if (e.target === F("manager") && F("manager").value.trim().length >= 2) { const f = F("manager").closest(".field"); f.classList.remove("invalid"); $(".error", f).textContent = ""; }
     if (e.target.type === "number") { const v = parseInt(e.target.value, 10); if (v > 99) e.target.value = 99; }
     updateSummary();
   });
@@ -105,26 +106,26 @@
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const manager = form.manager.value.trim();
+    const manager = F("manager").value.trim();
     const sel = selection();
     let ok = true;
-    const mf = form.manager.closest(".field");
-    if (manager.length < 2) { mf.classList.add("invalid"); $(".error", mf).textContent = "Indique ton nom."; ok = false; form.manager.focus(); }
+    const mf = F("manager").closest(".field");
+    if (manager.length < 2) { mf.classList.add("invalid"); $(".error", mf).textContent = "Indique ton nom."; ok = false; F("manager").focus(); }
     else { mf.classList.remove("invalid"); $(".error", mf).textContent = ""; }
     if (!sel.length) { $("#shiftError").textContent = "Choisis au moins un shift."; ok = false; }
     else if (sel.some((s) => s.n < 1)) { $("#shiftError").textContent = "Chaque shift choisi doit avoir au moins 1 chatter."; ok = false; }
     else $("#shiftError").textContent = "";
     if (!ok) return;
 
-    if (form.website.value) { showDone(sel, manager); return; } // robot : on fait semblant
+    if ((F("website") && F("website").value)) { showDone(sel, manager); return; } // robot : on fait semblant
     if (Date.now() - lastSent < 10000) { $("#shiftError").textContent = "Patiente quelques secondes avant de renvoyer."; return; }
     if (!CONFIGURED) {/* mode test local */}
     else if (!CLOUD) { $("#shiftError").textContent = "Connexion impossible. Recharge la page et réessaie."; return; }
 
     const req = {
-      id: uid(), manager, team: form.team.value.trim(),
+      id: uid(), manager, team: F("team").value.trim(),
       priority: form.querySelector('input[name="priority"]:checked').value,
-      note: form.note.value.trim(), archived: false, created_at: new Date().toISOString(),
+      note: F("note").value.trim(), archived: false, created_at: new Date().toISOString(),
       lines: SHIFTS.map((s) => sel.find((x) => x.shift === s.id)).filter(Boolean).map((s) => ({ shift: s.shift, requested: s.n, assigned: 0, history: [] })),
     };
 
@@ -144,7 +145,8 @@
       showDone(sel, manager);
     } catch (err) {
       console.error(err);
-      $("#shiftError").textContent = "L'envoi a échoué. Vérifie ta connexion et réessaie.";
+      const why = err && (err.message || err.details || err.code) ? " (" + (err.message || err.details || err.code) + ")" : "";
+      $("#shiftError").textContent = "L'envoi a échoué" + why + ". Vérifie ta connexion et réessaie.";
     } finally {
       btn.disabled = false; btn.innerHTML = btnHtml;
     }
