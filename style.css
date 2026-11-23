@@ -570,5 +570,3 @@ body.locked .app { display: none; }
 @media (max-width: 720px) { .share__row .btn { flex: 1 1 auto; justify-content: center; } }
 
 
-.formation { width: 100%; height: calc(100vh - 150px); min-height: 560px; border: 0; border-radius: 22px; background: #fff; box-shadow: var(--shadow); display: block; }
-@media (max-width: 720px) { .formation { height: calc(100vh - 130px); border-radius: 16px; } }
